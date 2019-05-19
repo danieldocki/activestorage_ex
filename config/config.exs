@@ -1,3 +1,3 @@
 use Mix.Config
 
-config :activestorage_ex, root_path: "/"
+import_config "#{Mix.env()}.exs"

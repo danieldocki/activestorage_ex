@@ -16,6 +16,16 @@ defmodule ActivestorageEx.DiskService do
   end
 
   @doc """
+    Creates a URL with a signed token that represents an attachment's
+    content type, disposition, and key.
+
+    Expiration based off `jwt_expiration` config var
+  """
+  def url(key, opts) do
+    # TODO
+  end
+
+  @doc """
     Returns the path to the folder containing a given key
   """
   def path_for(key) do
@@ -27,6 +37,20 @@ defmodule ActivestorageEx.DiskService do
   end
 
   defp root_path() do
-    Application.get_env(:activestorage_ex, :root_path)
+    ActivestorageEx.env(:root_path)
+  end
+
+  defp sign_jwt(payload) do
+    current_time = DateTime.utc_now() |> DateTime.to_unix()
+    token_duration = ActivestorageEx.env(:jwt_expiration) || 0
+
+    JWT.sign(payload, %{
+      key: jwt_secret(),
+      exp: current_time + token_duration
+    })
+  end
+
+  defp jwt_secret() do
+    ActivestorageEx.env(:jwt_secret)
   end
 end

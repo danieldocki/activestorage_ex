@@ -9,4 +9,13 @@ defmodule ActivestorageExTest do
 
     key
   end
+
+  describe "ActivestorageEx.env/1" do
+    test "It reads environment variables" do
+      env_value = ActivestorageEx.env(:root_path)
+      application_get_value = Application.get_env(:activestorage_ex, :root_path)
+
+      assert application_get_value === env_value
+    end
+  end
 end
