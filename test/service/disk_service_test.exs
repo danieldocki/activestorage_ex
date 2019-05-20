@@ -1,19 +1,18 @@
 defmodule ActivestorageExTest.DiskServiceTest do
   use ExUnit.Case
-  doctest ActivestorageEx
+  doctest ActivestorageEx.DiskService
   alias ActivestorageEx.DiskService
 
+  @rails_storage_directory "test/activestorage_ex_rails/storage/"
+
   setup do
-    Application.put_env(:activestorage_ex, :root_path, "/")
+    Application.put_env(:activestorage_ex, :root_path, @rails_storage_directory)
   end
 
   describe "DiskService.download/1" do
-    @rails_storage_directory "test/activestorage_ex_rails/storage/"
     @local_key ActivestorageExTest.get_local_upload_key()
 
     test "Returns a file from a given key as binary" do
-      Application.put_env(:activestorage_ex, :root_path, @rails_storage_directory)
-
       downloaded_file = DiskService.download(@local_key)
 
       assert is_binary(downloaded_file)
@@ -24,7 +23,7 @@ defmodule ActivestorageExTest.DiskServiceTest do
 
       missing_file = DiskService.download(@local_key)
 
-      assert {:error, :enoent} === missing_file
+      assert {:error, :enoent} == missing_file
     end
   end
 
@@ -43,16 +42,17 @@ defmodule ActivestorageExTest.DiskServiceTest do
     end
 
     test "Returned path is built based off of key name" do
+      Application.put_env(:activestorage_ex, :root_path, "/")
       path = DiskService.path_for("asdf")
 
-      assert "/as/df/asdf" === path
+      assert "/as/df/asdf" == path
     end
 
     test "Custom root paths are built into returned path" do
       Application.put_env(:activestorage_ex, :root_path, "/root/path")
       path = DiskService.path_for("asdf")
 
-      assert "/root/path/as/df/asdf" === path
+      assert "/root/path/as/df/asdf" == path
     end
   end
 end
