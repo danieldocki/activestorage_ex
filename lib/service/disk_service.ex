@@ -3,6 +3,8 @@ defmodule ActivestorageEx.DiskService do
     Wraps a local disk path as an ActivestorageEx service.
   """
 
+  alias ActivestorageEx.Service
+
   @doc """
     Returns a binary representation of an image for a given key
   """
@@ -19,10 +21,27 @@ defmodule ActivestorageEx.DiskService do
     Creates a URL with a signed token that represents an attachment's
     content type, disposition, and key.
 
-    Expiration based off `jwt_expiration` config var
+    Expiration based off `token_duration` option
   """
   def url(key, opts) do
-    # TODO
+    disposition = Service.content_disposition_with(opts[:disposition], opts[:filename])
+
+    verified_key_with_expiration =
+      sign_jwt(
+        %{
+          key: key,
+          disposition: disposition,
+          content_type: opts[:content_type]
+        },
+        opts[:token_duration]
+      )
+
+    disk_service_url(verified_key_with_expiration, %{
+      host: ActivestorageEx.env(:asset_host),
+      disposition: disposition,
+      content_type: opts[:content_type],
+      filename: opts[:filename]
+    })
   end
 
   @doc """
@@ -40,17 +59,26 @@ defmodule ActivestorageEx.DiskService do
     ActivestorageEx.env(:root_path)
   end
 
-  defp sign_jwt(payload) do
+  defp sign_jwt(payload, token_duration) do
     current_time = DateTime.utc_now() |> DateTime.to_unix()
-    token_duration = ActivestorageEx.env(:jwt_expiration) || 0
 
-    JWT.sign(payload, %{
-      key: jwt_secret(),
-      exp: current_time + token_duration
-    })
+    payload_with_expiration =
+      case token_duration do
+        nil -> payload
+        _ -> Map.put(payload, :exp, current_time + token_duration)
+      end
+
+    JWT.sign(payload_with_expiration, %{key: ActivestorageEx.env(:jwt_secret)})
   end
 
-  defp jwt_secret() do
-    ActivestorageEx.env(:jwt_secret)
+  defp disk_service_url(token, opts) do
+    cleaned_filename = Service.sanitize(opts[:filename])
+    whitelisted_opts = Map.take(opts, [:content_type, :disposition])
+    base_url = "#{opts[:host]}/active_storage/disk/#{token}/#{cleaned_filename}"
+
+    base_url
+    |> URI.parse()
+    |> Map.put(:query, URI.encode_query(whitelisted_opts))
+    |> URI.to_string()
   end
 end
