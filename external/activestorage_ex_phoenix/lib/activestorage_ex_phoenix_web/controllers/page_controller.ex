@@ -2,6 +2,6 @@ defmodule ActivestorageExPhoenixWeb.PageController do
   use ActivestorageExPhoenixWeb, :controller
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    send_resp(conn, :ok, ActivestorageEx.DiskService.download("4kR4sshQ7uCJaP8jgsXAYmAP"))
   end
 end

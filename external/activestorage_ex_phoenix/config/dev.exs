@@ -71,3 +71,6 @@ config :activestorage_ex_phoenix, ActivestorageExPhoenix.Repo,
   database: "activestorage_ex_development",
   hostname: "localhost",
   pool_size: 10
+
+config :activestorage_ex,
+  root_path: "../activestorage_ex_rails/storage"
