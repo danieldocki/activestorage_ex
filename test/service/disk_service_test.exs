@@ -11,7 +11,7 @@ defmodule ActivestorageExTest.DiskServiceTest do
   end
 
   describe "DiskService.download/1" do
-    @local_key ActivestorageExTest.get_local_upload_key()
+    @local_key TestHelper.get_local_upload_key()
 
     test "Returns a file from a given key as binary" do
       downloaded_file = DiskService.download(@local_key)
@@ -58,24 +58,6 @@ defmodule ActivestorageExTest.DiskServiceTest do
   end
 
   describe "DiskService.url/2" do
-    test "A signed JWT is returned with no expiration" do
-      token = jwt_from_url("", %{filename: ""})
-
-      assert {:ok, _} = JWT.verify(token, %{key: jwt_secret()})
-    end
-
-    test "The JWT can be given an expiration in the future and be verified" do
-      token = jwt_from_url("", %{filename: "", token_duration: 60})
-
-      assert {:ok, _} = JWT.verify(token, %{key: jwt_secret()})
-    end
-
-    test "The JWT cannot be verified if the expiration time has passed" do
-      token = jwt_from_url("", %{filename: "", token_duration: -60})
-
-      assert {:error, [exp: _]} = JWT.verify(token, %{key: jwt_secret()})
-    end
-
     test "The JWT contains disposition + filename, key, and content_type" do
       {:ok, claims} =
         jwt_from_url("test_key", %{
@@ -83,7 +65,7 @@ defmodule ActivestorageExTest.DiskServiceTest do
           disposition: "inline",
           content_type: "image/png"
         })
-        |> JWT.verify(%{key: jwt_secret()})
+        |> ActivestorageEx.verify_message()
 
       assert claims["key"] == "test_key"
       assert claims["disposition"] == "inline; filename=\"test.png\""
@@ -141,10 +123,6 @@ defmodule ActivestorageExTest.DiskServiceTest do
         |> Enum.fetch(3)
 
       token
-    end
-
-    defp jwt_secret() do
-      ActivestorageEx.env(:jwt_secret)
     end
   end
 end

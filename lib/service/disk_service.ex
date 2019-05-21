@@ -27,7 +27,7 @@ defmodule ActivestorageEx.DiskService do
     disposition = Service.content_disposition_with(opts[:disposition], opts[:filename])
 
     verified_key_with_expiration =
-      sign_jwt(
+      ActivestorageEx.sign_message(
         %{
           key: key,
           disposition: disposition,
