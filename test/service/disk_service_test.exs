@@ -3,7 +3,7 @@ defmodule ActivestorageExTest.DiskServiceTest do
   doctest ActivestorageEx.DiskService
   alias ActivestorageEx.DiskService
 
-  @rails_storage_directory "test/activestorage_ex_rails/storage/"
+  @rails_storage_directory "external/activestorage_ex_rails/storage/"
 
   setup do
     Application.put_env(:activestorage_ex, :root_path, @rails_storage_directory)

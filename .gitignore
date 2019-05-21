@@ -25,29 +25,30 @@ activestorage_ex-*.tar
 # Ignore Elixir language server
 .elixir_ls
 
-# Ignore appropriate Rails files
-# Ignore bundler config.
-/test/activestorage_ex_rails/.bundle
-
-# Ignore the default SQLite database.
-/test/activestorage_ex_rails/db/*.sqlite3
-/test/activestorage_ex_rails/db/*.sqlite3-journal
-
-# Ignore all logfiles and tempfiles.
-/test/activestorage_ex_rails/log/*
-/test/activestorage_ex_rails/tmp/*
-!/test/activestorage_ex_rails/log/.keep
-!/test/activestorage_ex_rails/tmp/.keep
-
-# Ignore uploaded files in development
-/test/activestorage_ex_rails/storage/*
-!/test/activestorage_ex_rails/storage/.keep
-
-/test/activestorage_ex_rails/node_modules
-/test/activestorage_ex_rails/yarn-error.log
-
-/test/activestorage_ex_rails/public/assets
-/test/activestorage_ex_rails.byebug_history
-
-# Ignore master key for decrypting credentials and more.
-/test/activestorage_ex_rails/config/master.key
+# Ignore appropriate Rails/Phoenix files
+/external/activestorage_ex_rails/.bundle
+/external/activestorage_ex_rails/db/*.sqlite3
+/external/activestorage_ex_rails/db/*.sqlite3-journal
+/external/activestorage_ex_rails/log/*
+/external/activestorage_ex_rails/tmp/*
+!/external/activestorage_ex_rails/log/.keep
+!/external/activestorage_ex_rails/tmp/.keep
+/external/activestorage_ex_rails/storage/*
+!/external/activestorage_ex_rails/storage/.keep
+/external/activestorage_ex_rails/node_modules
+/external/activestorage_ex_rails/yarn-error.log
+/external/activestorage_ex_rails/public/assets
+/external/activestorage_ex_rails.byebug_history
+/external/activestorage_ex_rails/config/master.key
+/external/activestorage_ex_phoenix/_build/
+/external/activestorage_ex_phoenix/cover/
+/external/activestorage_ex_phoenix/deps/
+/external/activestorage_ex_phoenix/doc/
+/external/activestorage_ex_phoenix/.fetch
+/external/activestorage_ex_phoenix/erl_crash.dump
+/external/activestorage_ex_phoenix/*.ez
+/external/activestorage_ex_phoenix/activestorage_ex_phoenix-*.tar
+/external/activestorage_ex_phoenix/npm-debug.log
+/external/activestorage_ex_phoenix/assets/node_modules/
+/external/activestorage_ex_phoenix/priv/static/
+/external/activestorage_ex_phoenix/config/*.secret.exs
