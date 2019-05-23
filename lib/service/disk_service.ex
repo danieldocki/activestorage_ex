@@ -59,18 +59,6 @@ defmodule ActivestorageEx.DiskService do
     ActivestorageEx.env(:root_path)
   end
 
-  defp sign_jwt(payload, token_duration) do
-    current_time = DateTime.utc_now() |> DateTime.to_unix()
-
-    payload_with_expiration =
-      case token_duration do
-        nil -> payload
-        _ -> Map.put(payload, :exp, current_time + token_duration)
-      end
-
-    JWT.sign(payload_with_expiration, %{key: ActivestorageEx.env(:jwt_secret)})
-  end
-
   defp disk_service_url(token, opts) do
     cleaned_filename = Service.sanitize(opts[:filename])
     whitelisted_opts = Map.take(opts, [:content_type, :disposition])

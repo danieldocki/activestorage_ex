@@ -24,6 +24,13 @@ defmodule ActivestorageExTest do
       assert {:ok, _} = ActivestorageEx.verify_message(token)
     end
 
+    test "A JWT with no expiration and the same payload always returns the same result" do
+      token_1 = ActivestorageEx.sign_message(%{foo: "bar"})
+      token_2 = ActivestorageEx.sign_message(%{foo: "bar"})
+
+      assert token_1 == token_2
+    end
+
     test "The JWT can be given an expiration in the future and be verified" do
       token = ActivestorageEx.sign_message(%{}, 60)
 

@@ -7,6 +7,6 @@ defmodule ActivestorageEx.Variant do
   """
 
   def key(_) do
-
+    # TODO: relies on Variations
   end
 end

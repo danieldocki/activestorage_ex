@@ -21,7 +21,8 @@ defmodule ActivestorageEx.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:yajwt, "~> 1.0"}
+      {:yajwt, "~> 1.0"},
+      {:mogrify, "~> 0.7.2"}
     ]
   end
 end
