@@ -34,6 +34,12 @@ defmodule ActivestorageExTest.DiskServiceTest do
       assert String.contains?(path, "as/df")
     end
 
+    test "Directories of variants are represented correctly" do
+      path = DiskService.path_for("variant/blob_key/variant_key")
+
+      assert String.contains?(path, "/va/ri/variant/blob_key/variant_key")
+    end
+
     test "Filename of returned path is the key name" do
       key = "asdf"
       path = DiskService.path_for(key)
