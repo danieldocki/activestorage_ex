@@ -12,6 +12,8 @@ require 'net/http'
   )
 
   user.save
+
+  user.avatar.variant(resize: "50x50^").processed
 end
 
 10.times do
@@ -28,4 +30,8 @@ end
   end
 
   post.save
+
+  post.photos.each do |photo|
+    photo.variant(resize: "50x50^").processed
+  end
 end
