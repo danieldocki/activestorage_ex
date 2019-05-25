@@ -4,6 +4,7 @@ defmodule ActivestorageExTest.DiskServiceTest do
   alias ActivestorageEx.DiskService
 
   @rails_storage_directory "external/activestorage_ex_rails/storage/"
+  @local_key TestHelper.get_local_upload_key()
 
   setup do
     Application.put_env(:activestorage_ex, :root_path, @rails_storage_directory)
@@ -11,8 +12,6 @@ defmodule ActivestorageExTest.DiskServiceTest do
   end
 
   describe "DiskService.download/1" do
-    @local_key TestHelper.get_local_upload_key()
-
     test "Returns a file from a given key as binary" do
       downloaded_file = DiskService.download(@local_key)
 
@@ -123,6 +122,16 @@ defmodule ActivestorageExTest.DiskServiceTest do
         |> Enum.fetch(3)
 
       token
+    end
+  end
+
+  describe "DiskService.exist?/1" do
+    test "Returns true if a file with a given key exists" do
+      assert DiskService.exist?(@local_key)
+    end
+
+    test "Returns false if a file with a given key doesn't exist" do
+      refute DiskService.exist?("not-a-real-key")
     end
   end
 end

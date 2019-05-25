@@ -3,6 +3,18 @@ defmodule ActivestorageEx do
     Application.get_env(:activestorage_ex, name)
   end
 
+  @doc """
+    Returns the service module specified in config
+  """
+  def service() do
+    # TODO: allow specification from config when more services exist
+    ActivestorageEx.DiskService
+  end
+
+  @doc """
+    Returns a URL-safe base64 encoded string representing a JWT.
+    An expiration can optionally be specified
+  """
   def sign_message(payload, token_duration \\ nil) do
     current_time = DateTime.utc_now() |> DateTime.to_unix()
 

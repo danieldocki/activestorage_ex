@@ -3,6 +3,12 @@ defmodule ActivestorageEx.Variation do
     A set of transformations that can be applied to a blob to create a variant.
   """
 
+  def key(transformations), do: encode(transformations)
+
+  def encode(transformations) do
+    ActivestorageEx.sign_message(transformations)
+  end
+
   @doc """
     Takes a map of `operations` and an `image_path`.  Each `operation` is then performed on
     the image, returning the image with operations queued
@@ -15,6 +21,7 @@ defmodule ActivestorageEx.Variation do
 
   defp apply_transformation([], image), do: image
   defp apply_transformation(operations, image) when map_size(operations) == 0, do: image
+
   defp apply_transformation(operations, image) do
     [{transformation, value} | rest] = Enum.to_list(operations)
     transformed_image = image |> Mogrify.custom(transformation, value)

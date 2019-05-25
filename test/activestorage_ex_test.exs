@@ -11,6 +11,12 @@ defmodule ActivestorageExTest do
     end
   end
 
+  describe "ActivestorageEx.service/0" do
+    test "It returns a service module" do
+      assert ActivestorageEx.DiskService = ActivestorageEx.service()
+    end
+  end
+
   describe "ActivestorageEx.sign_message/2" do
     test "A signed JWT is returned as a base64 string" do
       token = ActivestorageEx.sign_message(%{})
@@ -49,7 +55,7 @@ defmodule ActivestorageExTest do
     test "A generic error is returned for an invalid JWT" do
       bad_token =
         JWT.sign(%{}, %{key: "gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr9C"})
-        |> Base.url_encode64
+        |> Base.url_encode64()
 
       assert {:error, :invalid_token} = ActivestorageEx.verify_message(bad_token)
     end

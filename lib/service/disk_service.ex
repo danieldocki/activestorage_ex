@@ -51,6 +51,12 @@ defmodule ActivestorageEx.DiskService do
     Path.join(root_path(), [folder_for(key), "/", key])
   end
 
+  def exist?(key) do
+    key
+    |> path_for()
+    |> File.exists?()
+  end
+
   defp folder_for(key) do
     [String.slice(key, 0..1), String.slice(key, 2..3)] |> Enum.join("/")
   end
