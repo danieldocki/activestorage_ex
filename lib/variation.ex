@@ -36,8 +36,7 @@ defmodule ActivestorageEx.Variation do
 
   defp apply_transformation([], image), do: image
 
-  defp apply_transformation(operations, image) do
-    [operation | rest] = Enum.to_list(operations)
+  defp apply_transformation([operation | rest], image) do
     [{transformation, value}] = Map.to_list(operation)
     transformed_image = image |> Mogrify.custom(transformation, value)
 

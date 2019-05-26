@@ -24,7 +24,9 @@ defmodule ActivestorageEx.DiskService do
   end
 
   def upload(image, key) do
-    image |> Mogrify.save(path: path_for(key))
+    with :ok <- make_path_for(key) do
+      image |> Mogrify.save(path: path_for(key))
+    end
   end
 
   def make_path_for(key) do

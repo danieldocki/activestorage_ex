@@ -70,7 +70,7 @@ defmodule ActivestorageEx.Variant do
     ```
   """
   def key(%Variant{} = variant) do
-    blob = struct(Blob, variant)
+    blob = struct(Blob, Map.from_struct(variant))
 
     key(blob, variant.transformations)
   end
@@ -93,7 +93,7 @@ defmodule ActivestorageEx.Variant do
     ```
   """
   def processed(%Blob{} = blob, transformations) do
-    variant = struct(Variant, Map.put(blob, :transformations, transformations))
+    variant = struct(Variant, Map.put(Map.from_struct(blob), :transformations, transformations))
 
     case processed?(variant) do
       true -> variant
@@ -170,16 +170,18 @@ defmodule ActivestorageEx.Variant do
 
   defp process(%Variant{} = variant) do
     key = variant.key
-    extension = Path.extname(variant.filename)
-    image = %Mogrify.Image{path: key <> extension} |> Mogrify.create()
+    filepath = key <> Path.extname(variant.filename)
+    image = %Mogrify.Image{path: filepath} |> Mogrify.create()
+    tempfile_location = image.path
 
-    with :ok <- download_image(key, image.path) do
+    with :ok <- download_image(key, tempfile_location) do
       image
       |> transform(variant)
       |> format(variant)
       |> upload(variant)
-      |> remove_temp_file()
     end
+
+    remove_temp_file(tempfile_location)
 
     variant
   end
@@ -203,10 +205,8 @@ defmodule ActivestorageEx.Variant do
     ActivestorageEx.service().upload(image, key(variant))
   end
 
-  defp remove_temp_file(image) do
-    File.rm!(image.path)
-
-    image
+  defp remove_temp_file(filepath) do
+    File.rm(filepath)
   end
 
   defp invalid_image_content_type(variant) do
