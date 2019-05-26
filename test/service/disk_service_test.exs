@@ -8,7 +8,7 @@ defmodule ActivestorageExTest.DiskServiceTest do
 
   setup do
     Application.put_env(:activestorage_ex, :root_path, @rails_storage_directory)
-    Application.put_env(:activestorage_ex, :asset_host, "")
+    Application.put_env(:activestorage_ex, :asset_host, "http://localhost.test")
   end
 
   describe "DiskService.download/1" do
@@ -78,11 +78,11 @@ defmodule ActivestorageExTest.DiskServiceTest do
     end
 
     test "A custom host can be specified" do
-      Application.put_env(:activestorage_ex, :asset_host, "custom.host")
+      Application.put_env(:activestorage_ex, :asset_host, "http://custom.host")
 
       url = DiskService.url("", %{filename: ""})
 
-      assert String.starts_with?(url, "custom.host/")
+      assert String.starts_with?(url, "http://custom.host/")
     end
 
     test "The filename is present in the final URL" do
@@ -121,13 +121,13 @@ defmodule ActivestorageExTest.DiskServiceTest do
       refute String.contains?(url, "something_bad")
     end
 
-    defp jwt_from_url(token, opts) do
-      {:ok, token} =
-        DiskService.url(token, opts)
+    defp jwt_from_url(key, opts) do
+      {:ok, jwt} =
+        DiskService.url(key, opts)
         |> String.split("/")
-        |> Enum.fetch(3)
+        |> Enum.fetch(5)
 
-      token
+      jwt
     end
   end
 

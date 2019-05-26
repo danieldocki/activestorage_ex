@@ -85,6 +85,20 @@ defmodule ActivestorageExTest.VariantTest do
       remove_file_by_key(key)
     end
 
+    test "Variants are formatted as PNG if they have an invalid content_type" do
+      Application.put_env(:activestorage_ex, :root_path, "test/files/")
+      updated_blob = %Blob{@mock_blob | key: "TFJvzLbsfxgFnMY52mz65p5j", content_type: "fake/bad"}
+      key = Variant.key(updated_blob, @mock_transformations)
+
+      Variant.processed(updated_blob, @mock_transformations)
+
+      image_stats = Mogrify.open(DiskService.path_for(key)) |> Mogrify.verbose()
+
+      assert "png" == image_stats.format
+
+      remove_file_by_key(key)
+    end
+
     defp assert_file_unchanged(key, callable) do
       before_file = File.stat(DiskService.path_for(key))
       callable.()
@@ -101,6 +115,63 @@ defmodule ActivestorageExTest.VariantTest do
 
     defp remove_file_by_key(key) do
       File.rm(DiskService.path_for(key))
+    end
+  end
+
+  describe "Variant.service_url/2" do
+    test "A URL is created from a %Blob{} and transformations" do
+      url = Variant.service_url(@mock_blob, @mock_transformations) |> URI.parse()
+
+      assert url.host
+      assert url.scheme
+    end
+
+    test "A URL contains specified content_type and filename" do
+      blob = %Blob{
+        key: @local_key,
+        filename: "custom.jpg",
+        content_type: "image/jpg"
+      }
+
+      claims = Variant.service_url(blob, @mock_transformations) |> claims_from_url()
+
+      assert blob.content_type == claims["content_type"]
+      assert String.contains?(claims["disposition"], blob.filename)
+    end
+
+    test "A URL's content_type defaults to png if image is invalid" do
+      blob = %Blob{
+        key: @local_key,
+        filename: "custom.bad",
+        content_type: "fake/bad"
+      }
+
+      claims = Variant.service_url(blob, @mock_transformations) |> claims_from_url()
+
+      assert "image/png" == claims["content_type"]
+    end
+
+    test "A URL's filename defaults to png if image is invalid" do
+      blob = %Blob{
+        key: @local_key,
+        filename: "custom.bad",
+        content_type: "fake/bad"
+      }
+
+      claims = Variant.service_url(blob, @mock_transformations) |> claims_from_url()
+
+      assert String.contains?(claims["disposition"], "custom.bad.png")
+    end
+
+    defp claims_from_url(url) do
+      {:ok, token} =
+        url
+        |> String.split("/")
+        |> Enum.fetch(5)
+
+      {:ok, claims} = ActivestorageEx.verify_message(token)
+
+      claims
     end
   end
 end

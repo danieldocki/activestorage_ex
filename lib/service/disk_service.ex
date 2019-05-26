@@ -25,7 +25,9 @@ defmodule ActivestorageEx.DiskService do
 
   def upload(image, key) do
     with :ok <- make_path_for(key) do
-      image |> Mogrify.save(path: path_for(key))
+      image
+      |> Mogrify.save()
+      |> rename_image(key)
     end
   end
 
@@ -82,6 +84,12 @@ defmodule ActivestorageEx.DiskService do
 
   defp root_path() do
     ActivestorageEx.env(:root_path)
+  end
+
+  defp rename_image(image, key) do
+    File.rename(image.path, path_for(key))
+
+    image
   end
 
   defp disk_service_url(token, opts) do
