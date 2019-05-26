@@ -174,4 +174,13 @@ defmodule ActivestorageExTest.VariantTest do
       claims
     end
   end
+
+  describe "Variant.service_url/1" do
+    test "A URL is created from a %Variant{}" do
+      url = Variant.service_url(@mock_variant) |> URI.parse()
+
+      assert url.host
+      assert url.scheme
+    end
+  end
 end

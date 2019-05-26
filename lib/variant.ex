@@ -42,7 +42,7 @@ defmodule ActivestorageEx.Variant do
       blob = %Blob{}
       transformations = [%{resize: "50x50^"}, %{extent: "50x50"}]
 
-      Variant.key(blob, transformations)
+      Variant.key(blob, transformations) # variant/blob_key/variant_key
     ```
   """
   def key(%Blob{} = blob, transformations) do
@@ -66,7 +66,7 @@ defmodule ActivestorageEx.Variant do
     ```
       variant = %Variant{}
 
-      Variant.key(variant)
+      Variant.key(variant) # variant/blob_key/variant_key
     ```
   """
   def key(%Variant{} = variant) do
@@ -89,7 +89,7 @@ defmodule ActivestorageEx.Variant do
       blob = %Blob{}
       transformations = [%{resize: "50x50^"}, %{extent: "50x50"}]
 
-      Variant.processed(blob, transformations)
+      Variant.processed(blob, transformations) # %Variant{}
     ```
   """
   def processed(%Blob{} = blob, transformations) do
@@ -115,7 +115,7 @@ defmodule ActivestorageEx.Variant do
       blob = %Blob{}
       transformations = [%{resize: "50x50^"}, %{extent: "50x50"}]
 
-      Variant.service_url(blob, transformations)
+      Variant.service_url(blob, transformations) # /active_storage/...
     ```
   """
   def service_url(%Blob{} = blob, transformations) do
@@ -141,11 +141,11 @@ defmodule ActivestorageEx.Variant do
     ```
       variant = %Variant{}
 
-      Variant.service_url(variant)
+      Variant.service_url(variant) # /active_storage/...
     ```
   """
   def service_url(%Variant{} = variant) do
-    blob = struct(Blob, variant)
+    blob = struct(Blob, Map.from_struct(variant))
 
     service_url(blob, variant.transformations)
   end

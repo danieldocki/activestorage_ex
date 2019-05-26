@@ -8,6 +8,11 @@ defmodule ActivestorageEx.Service do
   @doc """
     Returns a valid Content-Disposition string from a provided
     disposition type and a filename
+
+  ## Parameters
+    - `type`: Disposition type.  Either "attachment" or "inline"
+    - `filename`: The name of the given file
+    - `opts`: An optional list of config settings for the sanitization method
   """
   def content_disposition_with(type, filename, opts \\ []) do
     "#{cleaned_type(type)}; filename=\"#{sanitize(filename, opts)}\""
@@ -17,6 +22,10 @@ defmodule ActivestorageEx.Service do
     Takes a given filename and normalizes, filters and truncates it.
     if extra breathing room is required (for example to add your own filename
     extension later), you can leave extra room with the padding parameter
+
+  ## Parameters
+    - `name`: The filename to sanitize
+    - `opts`: Optional sanitization settings.  Can controll padding or fallback filenames
   """
   def sanitize(name, opts \\ []) when is_binary(name) and is_list(opts) do
     padding = Keyword.get(opts, :padding, 0)
