@@ -9,12 +9,29 @@ defmodule ActivestorageEx.DiskService do
     Returns a binary representation of an image for a given key
   """
   def download(key) do
-    filepath_from_key = path_for(key)
-
-    case File.open(filepath_from_key) do
+    case File.open(path_for(key)) do
       {:ok, io} -> IO.binread(io, :all)
       {:error, err} -> {:error, err}
     end
+  end
+
+  def stream_download(key, filepath) do
+    five_megabytes = 5 * 1024 * 1024
+
+    File.stream!(path_for(key), [], five_megabytes)
+    |> Stream.into(File.stream!(filepath))
+    |> Stream.run()
+  end
+
+  def upload(image, key) do
+    image |> Mogrify.save(path: path_for(key))
+  end
+
+  def make_path_for(key) do
+    key
+    |> path_for()
+    |> Path.dirname()
+    |> File.mkdir_p()
   end
 
   @doc """
