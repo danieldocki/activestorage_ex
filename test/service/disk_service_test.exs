@@ -27,6 +27,17 @@ defmodule ActivestorageExTest.DiskServiceTest do
     end
   end
 
+  describe "DiskService.stream_download/2" do
+    test "An image is downloaded to the given filepath" do
+      filepath = "test/files/streamed.jpg"
+      DiskService.stream_download(@local_key, filepath)
+
+      assert File.exists?(filepath)
+
+      File.rm(filepath)
+    end
+  end
+
   describe "DiskService.upload/2" do
     test "An image is sucessfully saved to disk" do
       Application.put_env(:activestorage_ex, :root_path, "test/files")
