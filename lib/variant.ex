@@ -5,6 +5,17 @@ defmodule ActivestorageEx.Variant do
     fixed-size avatars, or any other derivative image from the original.
 
     Variants rely on ImageMagick for the actual transformations.
+
+  ## Examples
+    Variants are a struct with the following fields:
+    ```
+      %Variant{
+        key: String,
+        content_type: String,
+        filename: String,
+        transformations: [Map]
+      }
+    ```
   """
 
   @enforce_keys [:key, :content_type, :filename, :transformations]
@@ -19,7 +30,20 @@ defmodule ActivestorageEx.Variant do
   alias ActivestorageEx.Variant
 
   @doc """
-    Returns an identifying key for a given %Blob{} and set of transformations
+    Returns an identifying key for a given `%Blob{}` and set of transformations
+
+  ## Parameters
+    - `blob`: A `%Blob{}` representing a root image. Presumably from the database
+    - `transformations`: An ordered list of maps that represent valid ImageMagick commands
+  ## Examples
+    Generating a key from a blob and list of transformations
+
+    ```
+      blob = %Blob{}
+      transformations = [%{resize: "50x50^"}, %{extent: "50x50"}]
+
+      Variant.key(blob, transformations)
+    ```
   """
   def key(%Blob{} = blob, transformations) do
     variant_key = ActivestorageEx.Variation.key(transformations)
@@ -28,12 +52,46 @@ defmodule ActivestorageEx.Variant do
     "variants/#{blob.key}/#{hashed_variant_key}"
   end
 
+  @doc """
+    Returns an identifying key for a given `%Variant{}`.
+
+    Delegates to `Variant.key(%Blob{}, transformations)`,
+    handling the transformations automatically
+
+  ## Parameters
+    - `variant`: A `%Variant{}` created from a blob and list of transformations
+  ## Examples
+    Generating a key automatically from a variant
+
+    ```
+      variant = %Variant{}
+
+      Variant.key(variant)
+    ```
+  """
   def key(%Variant{} = variant) do
     blob = struct(Blob, variant)
 
     key(blob, variant.transformations)
   end
 
+  @doc """
+    Returns a variant matching `blob` and `transformations`
+    or creates one if it doesn't exist
+
+  ## Parameters
+    - `blob`: A `%Blob{}` representing a root image. Presumably from the database
+    - `transformations`: An ordered list of maps that represent valid ImageMagick commands
+  ## Examples
+    Retrieve a variant from a blob and list of transformations
+
+    ```
+      blob = %Blob{}
+      transformations = [%{resize: "50x50^"}, %{extent: "50x50"}]
+
+      Variant.processed(blob, transformations)
+    ```
+  """
   def processed(%Blob{} = blob, transformations) do
     variant = struct(Variant, Map.put(blob, :transformations, transformations))
 
@@ -43,20 +101,53 @@ defmodule ActivestorageEx.Variant do
     end
   end
 
-  def service_url(%Variant{} = variant) do
-    blob = struct(Blob, variant)
+  @doc """
+    Returns a URL with the information required to represent a variant,
+    taking the current file service into account
 
-    service_url(blob, variant.transformations)
-  end
+  ## Parameters
+    - `blob`: A `%Blob{}` representing a root image. Presumably from the database
+    - `transformations`: An ordered list of maps that represent valid ImageMagick commands
+  ## Examples
+    Retrieve a service URL from a blob and list of transformations
 
-  def service_url(%Blob{} = blob, transformations, disposition \\ "inline") do
+    ```
+      blob = %Blob{}
+      transformations = [%{resize: "50x50^"}, %{extent: "50x50"}]
+
+      Variant.service_url(blob, transformations)
+    ```
+  """
+  def service_url(%Blob{} = blob, transformations) do
     key(blob, transformations)
     |> ActivestorageEx.service().url(%{
       content_type: content_type(blob),
       filename: filename(blob),
-      disposition: disposition,
       token_duration: Application.get_env(:activestorage_ex, :jwt_expiration)
     })
+  end
+
+  @doc """
+    Returns a URL with the information required to represent a variant,
+    taking the current file service into account.
+
+    Delgates to `Variant.service_url(%Blob{}, transformations)`
+
+  ## Parameters
+    - `variant`: A `%Variant{}` created from a blob and list of transformations
+  ## Examples
+    Retrieve a service URL from a variant directly
+
+    ```
+      variant = %Variant{}
+
+      Variant.service_url(variant)
+    ```
+  """
+  def service_url(%Variant{} = variant) do
+    blob = struct(Blob, variant)
+
+    service_url(blob, variant.transformations)
   end
 
   defp content_type(%Blob{} = blob) do

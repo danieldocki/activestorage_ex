@@ -22,7 +22,8 @@ defmodule ActivestorageEx.MixProject do
   defp deps do
     [
       {:yajwt, "~> 1.0"},
-      {:mogrify, "~> 0.7.2"}
+      {:mogrify, "~> 0.7.2"},
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end
 end
