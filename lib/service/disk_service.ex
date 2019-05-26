@@ -31,13 +31,6 @@ defmodule ActivestorageEx.DiskService do
     end
   end
 
-  def make_path_for(key) do
-    key
-    |> path_for()
-    |> Path.dirname()
-    |> File.mkdir_p()
-  end
-
   @doc """
     Creates a URL with a signed token that represents an attachment's
     content type, disposition, and key.
@@ -76,6 +69,13 @@ defmodule ActivestorageEx.DiskService do
     key
     |> path_for()
     |> File.exists?()
+  end
+
+  defp make_path_for(key) do
+    key
+    |> path_for()
+    |> Path.dirname()
+    |> File.mkdir_p()
   end
 
   defp folder_for(key) do

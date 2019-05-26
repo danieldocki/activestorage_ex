@@ -27,6 +27,33 @@ defmodule ActivestorageExTest.DiskServiceTest do
     end
   end
 
+  describe "DiskService.upload/2" do
+    test "An image is sucessfully saved to disk" do
+      Application.put_env(:activestorage_ex, :root_path, "test/files")
+      image = Mogrify.open("test/files/image.jpg")
+      key = "test_key"
+
+      DiskService.upload(image, key)
+
+      assert File.exists?(DiskService.path_for(key))
+
+      File.rm(DiskService.path_for(key))
+    end
+
+    test "Image directory is created if it doesn't exist" do
+      Application.put_env(:activestorage_ex, :root_path, "test/files")
+      image = Mogrify.open("test/files/image.jpg")
+      key = "non_existant_key"
+
+      refute File.exists?(Path.dirname(DiskService.path_for(key)))
+
+      DiskService.upload(image, key)
+
+      assert File.exists?(Path.dirname(DiskService.path_for(key)))
+      File.rm_rf(Path.dirname(DiskService.path_for(key)))
+    end
+  end
+
   describe "DiskService.path_for/1" do
     test "Directories of returned path are based off key name" do
       path = DiskService.path_for("asdf")
