@@ -4,11 +4,19 @@ This project was started with the intention of easing the transition between a R
 
 Since this is being created with our needs in mind, it'll start by only allowing reads and creating variations from the local file system and AWS S3. Direct uploads and other providers may come in future, but they aren't an immediate goal.
 
+## WIP
+
+This project is under active development. Use at your own risk until the API is stabilized
+
+## License
+
+MIT
+
 ## TODO
 
 - ~~Allow reading of originals from disk~~
-- Allow reading of variants from disk
-- Allow creation of variants from disk
+- ~~Allow reading of variants from disk~~
+- ~~Allow creation of variants from disk~~
 - Allow reading of originals from s3
 - Allow reading of variants from s3
 - Allow creation of variants from s3
