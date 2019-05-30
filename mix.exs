@@ -23,7 +23,12 @@ defmodule ActivestorageEx.MixProject do
     [
       {:yajwt, "~> 1.0"},
       {:mogrify, "~> 0.7.2"},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      # For AWS S3
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:hackney, "~> 1.9"},
+      {:sweet_xml, "~> 0.6"}
     ]
   end
 end

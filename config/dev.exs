@@ -5,3 +5,5 @@ config :activestorage_ex,
   jwt_secret: "",
   jwt_expiration: 60 * 5,
   asset_host: ""
+
+import_config "secrets.exs"
