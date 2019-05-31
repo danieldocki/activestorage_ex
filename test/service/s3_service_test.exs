@@ -84,13 +84,14 @@ defmodule ActivestorageExTest.S3ServiceTest do
     end
 
     test "An image with a complex path is sucessfully deleted from s3" do
-      upload_test_image()
+      key = "variants/new_key"
+      upload_test_image(key)
 
-      assert S3Service.exist?(@test_key)
+      assert S3Service.exist?(key)
 
-      S3Service.delete(@test_key)
+      S3Service.delete(key)
 
-      refute S3Service.exist?(@test_key)
+      refute S3Service.exist?(key)
     end
   end
 
@@ -149,12 +150,12 @@ defmodule ActivestorageExTest.S3ServiceTest do
     end
   end
 
-  defp upload_test_image() do
+  defp upload_test_image(key \\ @test_key) do
     image = Mogrify.open("test/files/image.jpg")
 
-    S3Service.upload(image, @test_key)
+    S3Service.upload(image, key)
 
-    @test_key
+    key
   end
 
   defp delete_test_image() do
