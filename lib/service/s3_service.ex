@@ -16,7 +16,7 @@ defmodule ActivestorageEx.S3Service do
 
   def stream_download(key, filepath) do
     # `download_file` operates in a streaming fashion by default
-    S3.download_file(bucket_name(), key, filepath) |> ExAws.request!
+    S3.download_file(bucket_name(), key, filepath) |> ExAws.request!()
 
     {:ok, filepath}
   end
@@ -25,8 +25,7 @@ defmodule ActivestorageEx.S3Service do
     saved_image = image |> Mogrify.save()
 
     with {:ok, image_io} <- File.read(saved_image.path),
-      {:ok, _} <- put_object_for(key, image_io)
-    do
+         {:ok, _} <- put_object_for(key, image_io) do
       remove_temp_file(saved_image.path)
 
       :ok
@@ -39,7 +38,7 @@ defmodule ActivestorageEx.S3Service do
   end
 
   def delete(key) do
-    delete_request = S3.delete_object(bucket_name(), key) |> ExAws.request
+    delete_request = S3.delete_object(bucket_name(), key) |> ExAws.request()
 
     case delete_request do
       {:ok, _} -> :ok
@@ -50,6 +49,7 @@ defmodule ActivestorageEx.S3Service do
   def url(key, opts) do
     disposition = Service.content_disposition_with(opts[:disposition], opts[:filename])
     s3_config = ExAws.Config.new(:s3, [])
+
     url_options = [
       expires_in: ActivestorageEx.env(:link_expiration),
       query_params: [
@@ -75,11 +75,11 @@ defmodule ActivestorageEx.S3Service do
   end
 
   defp put_object_for(key, image_io) do
-    S3.put_object(bucket_name(), key, image_io) |> ExAws.request
+    S3.put_object(bucket_name(), key, image_io) |> ExAws.request()
   end
 
   defp object_for(key) do
-    S3.get_object(bucket_name(), key) |> ExAws.request
+    S3.get_object(bucket_name(), key) |> ExAws.request()
   end
 
   defp bucket_name do

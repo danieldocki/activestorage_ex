@@ -104,7 +104,8 @@ defmodule ActivestorageEx.DiskService do
   def delete(key) do
     case File.rm(path_for(key)) do
       :ok -> :ok
-      {:error, :enoent} -> :ok # Ignore files that don't exist
+      # Ignore files that don't exist
+      {:error, :enoent} -> :ok
       {:error, err} -> {:error, err}
     end
   end
