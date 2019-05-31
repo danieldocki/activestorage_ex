@@ -36,6 +36,15 @@ defmodule ActivestorageExTest.DiskServiceTest do
 
       File.rm(filepath)
     end
+
+    test "The filepath is returned upon success" do
+      filepath = "test/files/streamed.jpg"
+      download = DiskService.stream_download(@local_key, filepath)
+
+      assert {:ok, ^filepath} = download
+
+      File.rm(filepath)
+    end
   end
 
   describe "DiskService.upload/2" do

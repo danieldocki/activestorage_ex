@@ -44,7 +44,7 @@ defmodule ActivestorageEx.DiskService do
       blob = %Blob{}
       filepath = "storage/image.png"
 
-      DiskService.stream_download(blob.key, filepath) # :ok
+      DiskService.stream_download(blob.key, filepath) # "storage/image.png"
     ```
   """
   def stream_download(key, filepath) do
@@ -53,6 +53,8 @@ defmodule ActivestorageEx.DiskService do
     File.stream!(path_for(key), [], five_megabytes)
     |> Stream.into(File.stream!(filepath))
     |> Stream.run()
+
+    {:ok, filepath}
   end
 
   @doc """
@@ -79,6 +81,8 @@ defmodule ActivestorageEx.DiskService do
       |> Mogrify.save()
       |> rename_image(key)
     end
+
+    :ok
   end
 
   @doc """

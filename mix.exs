@@ -27,8 +27,8 @@ defmodule ActivestorageEx.MixProject do
       # For AWS S3
       {:ex_aws, "~> 2.1"},
       {:ex_aws_s3, "~> 2.0"},
-      {:hackney, "~> 1.9"},
-      {:sweet_xml, "~> 0.6"}
+      {:poison, "~> 3.0"},
+      {:hackney, "~> 1.9"}
     ]
   end
 end

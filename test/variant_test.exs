@@ -50,7 +50,6 @@ defmodule ActivestorageExTest.VariantTest do
 
   describe "Variant.processed/2" do
     test "Returns a variant directly if it exists" do
-      Application.put_env(:activestorage_ex, :root_path, "test/files/")
       key = Variant.key(@mock_blob, @mock_transformations)
 
       assert_file_unchanged(key, fn ->

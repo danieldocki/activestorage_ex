@@ -123,7 +123,7 @@ defmodule ActivestorageEx.Variant do
     |> ActivestorageEx.service().url(%{
       content_type: content_type(blob),
       filename: filename(blob),
-      token_duration: Application.get_env(:activestorage_ex, :jwt_expiration)
+      token_duration: Application.get_env(:activestorage_ex, :link_expiration)
     })
   end
 
@@ -174,7 +174,7 @@ defmodule ActivestorageEx.Variant do
     image = %Mogrify.Image{path: filepath} |> Mogrify.create()
     tempfile_location = image.path
 
-    with :ok <- download_image(key, tempfile_location) do
+    with {:ok, _} <- download_image(key, tempfile_location) do
       image
       |> transform(variant)
       |> format(variant)
