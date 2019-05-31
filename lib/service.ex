@@ -11,6 +11,7 @@ defmodule ActivestorageEx.Service do
   @callback upload(image :: term, key :: String.t()) :: :ok | {:error, reason :: term}
   @callback delete(key :: String.t()) :: :ok | {:error, reason :: term}
   @callback url(key :: String.t(), opts :: map) :: url :: String.t()
+  @callback exist?(key :: String.t()) :: result :: boolean
 
   @doc """
     Returns a valid Content-Disposition string from a provided

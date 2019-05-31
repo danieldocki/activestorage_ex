@@ -1,6 +1,6 @@
 defmodule ActivestorageEx.S3Service do
   @moduledoc """
-    Wraps Amazon S3 as a storage service.
+    Wraps Amazon S3 as a storage service. Documentation mirrors that of `DiskService`.
   """
   @behaviour ActivestorageEx.Service
 
@@ -53,8 +53,8 @@ defmodule ActivestorageEx.S3Service do
     url_options = [
       expires_in: ActivestorageEx.env(:link_expiration),
       query_params: [
-        response_content_disposition: disposition,
-        response_content_type: opts[:content_type]
+        {"response_content_disposition", disposition},
+        {"response_content_type", opts[:content_type]}
       ]
     ]
 
