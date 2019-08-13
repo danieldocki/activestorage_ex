@@ -5,6 +5,7 @@ defmodule ActivestorageEx.DiskService do
     `:root_path` in your config must be set.  Both blobs and
     variants are stored in folders with `:root_path` as the root
   """
+  @behaviour ActivestorageEx.Service
 
   alias ActivestorageEx.Service
 
@@ -33,7 +34,6 @@ defmodule ActivestorageEx.DiskService do
     Downloads and saves a file to disk in a streaming fashion.
     Good for downloading large files
 
-    Returns `:ok | {:error, error}`
   ## Parameters
     - `key`: A `%Blob{}` or `%Variant{}`'s key
     - `filepath`: The desired filepath.  Note that directories will not be created
@@ -44,21 +44,23 @@ defmodule ActivestorageEx.DiskService do
       blob = %Blob{}
       filepath = "storage/image.png"
 
-      DiskService.stream_download(blob.key, filepath) # :ok
+      DiskService.stream_download(blob.key, filepath) # {:ok, "storage/image.png"}
     ```
   """
   def stream_download(key, filepath) do
     five_megabytes = 5 * 1024 * 1024
 
-    File.stream!(path_for(key), [], five_megabytes)
+    path_for(key)
+    |> File.stream!([], five_megabytes)
     |> Stream.into(File.stream!(filepath))
     |> Stream.run()
+
+    {:ok, filepath}
   end
 
   @doc """
     Saves an `%Image{}` to disk, as determined by a given `%Blob{}` or `%Variant{}` key
 
-    Returns the `%Image{}`
   ## Parameters
     - `image`: A `%Mogrify.Image{}` that isn't persisted
     - `key`: The blob or variant's key.  File location will be based off this.
@@ -78,6 +80,33 @@ defmodule ActivestorageEx.DiskService do
       image
       |> Mogrify.save()
       |> rename_image(key)
+
+      :ok
+    else
+      {:error, err} -> {:error, err}
+    end
+  end
+
+  @doc """
+    Deletes an image based on its `key`
+
+  ## Parameters
+    - `key`: The blob or variant's key
+  ## Examples
+    Deleting a file from a `%Blob{}` key
+
+    ```
+      blob = %Blob{}
+
+      DiskService.delete(blob.key)
+    ```
+  """
+  def delete(key) do
+    case File.rm(path_for(key)) do
+      :ok -> :ok
+      # Ignore files that don't exist
+      {:error, :enoent} -> :ok
+      {:error, err} -> {:error, err}
     end
   end
 
@@ -177,7 +206,7 @@ defmodule ActivestorageEx.DiskService do
     [String.slice(key, 0..1), String.slice(key, 2..3)] |> Enum.join("/")
   end
 
-  defp root_path() do
+  defp root_path do
     ActivestorageEx.env(:root_path)
   end
 

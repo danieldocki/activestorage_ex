@@ -8,7 +8,7 @@ defmodule ActivestorageExPhoenixWeb.ShowController do
           disposition: "attachment",
           filename: "something.png",
           content_type: "image/png",
-          token_duration: Application.get_env(:activestorage_ex, :jwt_expiration)
+          token_duration: Application.get_env(:activestorage_ex, :link_expiration)
         })
     })
   end

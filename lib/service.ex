@@ -1,9 +1,17 @@
 defmodule ActivestorageEx.Service do
   @moduledoc """
-    Provides a base set of methods that will be used across other service modules
+    Provides a base set of methods and behaviours that will be used across other service modules
   """
 
   @acceptable_dispositions ["inline", "attachment"]
+
+  @callback download(key :: String.t()) :: {:ok, binary :: iodata} | {:error, reason :: term}
+  @callback stream_download(key :: String.t(), filepath :: String.t()) ::
+              {:ok, filepath :: String.t()} | {:error, reason :: term}
+  @callback upload(image :: term, key :: String.t()) :: :ok | {:error, reason :: term}
+  @callback delete(key :: String.t()) :: :ok | {:error, reason :: term}
+  @callback url(key :: String.t(), opts :: map) :: url :: String.t()
+  @callback exist?(key :: String.t()) :: result :: boolean
 
   @doc """
     Returns a valid Content-Disposition string from a provided
