@@ -17,9 +17,8 @@ defmodule ActivestorageEx do
   @doc """
     Returns the service module specified in config
   """
-  def service() do
-    # TODO: allow specification from config when more services exist
-    ActivestorageEx.DiskService
+  def service do
+    env(:service)
   end
 
   @doc """
