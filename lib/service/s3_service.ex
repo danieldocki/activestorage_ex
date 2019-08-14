@@ -46,23 +46,6 @@ defmodule ActivestorageEx.S3Service do
     end
   end
 
-  # def url(key, opts) do
-  #   disposition = Service.content_disposition_with(opts[:disposition], opts[:filename])
-  #   s3_config = ExAws.Config.new(:s3, [])
-
-  #   url_options = [
-  #     expires_in: ActivestorageEx.env(:link_expiration),
-  #     query_params: [
-  #       {"response_content_disposition", disposition},
-  #       {"response_content_type", opts[:content_type]}
-  #     ]
-  #   ]
-
-  #   {:ok, url} = S3.presigned_url(s3_config, :get, bucket_name(), key, url_options)
-
-  #   url
-  # end
-
   def url(key, opts) do
     disposition = Service.content_disposition_with(opts[:disposition], opts[:filename])
 

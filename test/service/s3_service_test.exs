@@ -105,7 +105,7 @@ defmodule ActivestorageExTest.S3ServiceTest do
 
       assert String.contains?(
                url,
-               "response_content_disposition=inline%3B%20filename%3D%22testing_key%22"
+               "disposition=inline%3B+filename%3D%22testing_key%22"
              )
     end
 
@@ -116,23 +116,9 @@ defmodule ActivestorageExTest.S3ServiceTest do
           disposition: "inline"
         })
         |> String.split("/")
-        |> Enum.at(4)
+        |> Enum.at(6)
 
       assert String.starts_with?(url_path, @test_key)
-    end
-
-    test "The expiration is present in the final URL" do
-      Application.put_env(:activestorage_ex, :link_expiration, 100)
-
-      url =
-        S3Service.url(@test_key, %{
-          filename: @test_key,
-          disposition: "inline"
-        })
-
-      assert String.contains?(url, "X-Amz-Expires=100")
-
-      Application.put_env(:activestorage_ex, :link_expiration, 5 * 60)
     end
   end
 
