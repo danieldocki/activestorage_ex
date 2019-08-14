@@ -46,21 +46,42 @@ defmodule ActivestorageEx.S3Service do
     end
   end
 
+  # def url(key, opts) do
+  #   disposition = Service.content_disposition_with(opts[:disposition], opts[:filename])
+  #   s3_config = ExAws.Config.new(:s3, [])
+
+  #   url_options = [
+  #     expires_in: ActivestorageEx.env(:link_expiration),
+  #     query_params: [
+  #       {"response_content_disposition", disposition},
+  #       {"response_content_type", opts[:content_type]}
+  #     ]
+  #   ]
+
+  #   {:ok, url} = S3.presigned_url(s3_config, :get, bucket_name(), key, url_options)
+
+  #   url
+  # end
+
   def url(key, opts) do
     disposition = Service.content_disposition_with(opts[:disposition], opts[:filename])
-    s3_config = ExAws.Config.new(:s3, [])
 
-    url_options = [
-      expires_in: ActivestorageEx.env(:link_expiration),
-      query_params: [
-        {"response_content_disposition", disposition},
-        {"response_content_type", opts[:content_type]}
-      ]
-    ]
+    verified_key_with_expiration =
+      ActivestorageEx.sign_message(
+        %{
+          key: key,
+          disposition: disposition,
+          content_type: opts[:content_type]
+        },
+        opts[:token_duration]
+      )
 
-    {:ok, url} = S3.presigned_url(s3_config, :get, bucket_name(), key, url_options)
-
-    url
+    s3_url(verified_key_with_expiration, %{
+      host: ActivestorageEx.env(:asset_host),
+      disposition: disposition,
+      content_type: opts[:content_type],
+      filename: opts[:filename]
+    })
   end
 
   def exist?(key) do
@@ -84,5 +105,16 @@ defmodule ActivestorageEx.S3Service do
 
   defp bucket_name do
     ActivestorageEx.env(:s3_bucket)
+  end
+
+  defp s3_url(token, opts) do
+    cleaned_filename = Service.sanitize(opts[:filename])
+    whitelisted_opts = Map.take(opts, [:content_type, :disposition])
+    base_url = "#{opts[:host]}/active_storage/s3/#{token}/#{cleaned_filename}"
+
+    base_url
+    |> URI.parse()
+    |> Map.put(:query, URI.encode_query(whitelisted_opts))
+    |> URI.to_string()
   end
 end
