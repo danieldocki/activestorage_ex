@@ -36,6 +36,15 @@ defmodule ActivestorageExTest.DiskServiceTest do
 
       File.rm(filepath)
     end
+
+    test "The filepath is returned upon success" do
+      filepath = "test/files/streamed.jpg"
+      download = DiskService.stream_download(@local_key, filepath)
+
+      assert {:ok, ^filepath} = download
+
+      File.rm(filepath)
+    end
   end
 
   describe "DiskService.upload/2" do
@@ -62,6 +71,34 @@ defmodule ActivestorageExTest.DiskServiceTest do
 
       assert File.exists?(Path.dirname(DiskService.path_for(key)))
       File.rm_rf(Path.dirname(DiskService.path_for(key)))
+    end
+  end
+
+  describe "DiskService.delete/1" do
+    test "File is deleted if it exists" do
+      key = "test_key"
+      save_image(key)
+
+      assert File.exists?(DiskService.path_for(key))
+
+      :ok = DiskService.delete(key)
+
+      refute File.exists?(DiskService.path_for(key))
+    end
+
+    test "No error is thrown if a file doesn't exist" do
+      key = "super_fake_test_key"
+
+      refute File.exists?(DiskService.path_for(key))
+
+      :ok = DiskService.delete(key)
+    end
+
+    defp save_image(key) do
+      Application.put_env(:activestorage_ex, :root_path, "test/files")
+      image = Mogrify.open("test/files/image.jpg")
+
+      DiskService.upload(image, key)
     end
   end
 
