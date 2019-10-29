@@ -211,7 +211,8 @@ defmodule ActivestorageEx.DiskService do
   end
 
   defp rename_image(image, key) do
-    File.rename(image.path, path_for(key))
+    File.copy!(image.path, path_for(key))
+    File.rm!(image.path)
 
     image
   end
